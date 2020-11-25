@@ -1,0 +1,233 @@
+// TCSS 305 Assignment 5 - Paint
+package view;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JColorChooser;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JSlider;
+import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
+import javax.swing.SwingConstants;
+
+
+/**
+ * 
+ * @author jamesm47
+ * @version 11/12/18
+ */
+public class PaintGUI {
+    
+    private JFrame myFrame;
+    
+    ImageIcon icon = new ImageIcon("resources//uw_logo.gif");
+    ImageIcon lineIcon = new ImageIcon("resources//line.gif");
+    ImageIcon pencilIcon = new ImageIcon("resources//pencil.gif");
+    ImageIcon rectangleIcon = new ImageIcon("resources//rectangle.gif");
+    ImageIcon ellipseIcon = new ImageIcon("resources//ellipse.gif");
+    
+    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+    ButtonGroup brushes = new ButtonGroup();
+    
+    Color currentColor = Color.decode("#4b2e83");
+    
+    int thickness = 2;
+    
+    JButton line;
+    JButton pencil;
+    JButton rectangle;
+    JButton ellipse;
+    
+    Point lineStart = null;
+    Point lineEnd = null;
+    
+    JColorChooser colorChooser = new JColorChooser();
+    
+    public void start() {
+        myFrame = new JFrame("TCSS 305 - Paint Program");
+        
+        myFrame.setIconImage(icon.getImage());
+        
+        myFrame.setSize(screenSize.width/3, screenSize.height/3);
+        
+        myFrame.setLocation(screenSize.width/3, screenSize.height/3);
+        
+
+        JPanel drawPanel = new JPanel(); 
+        drawPanel.addMouseListener(new MyMouseListener());
+        drawPanel.addMouseMotionListener(new MyMouseListener());
+            
+        
+        drawPanel.setBackground(Color.WHITE);
+        
+        myFrame.add(drawPanel, BorderLayout.CENTER);
+
+        
+        createMenu(myFrame);
+        createToolBar(myFrame);
+        
+        myFrame.setVisible(true);
+        
+        myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+    
+    
+
+
+    
+    public void createMenu(JFrame myFrame) {
+        JMenuBar topMenu = new JMenuBar();
+        JMenu options = new JMenu("Options");
+        JMenu tools = new JMenu("Tools");
+        JMenu help = new JMenu("Help");
+        topMenu.add(options);
+        
+        JMenu thickness = new JMenu("Thickness");
+        JSlider thickSlider = new JSlider(SwingConstants.HORIZONTAL, 0, 15, 5);
+        thickSlider.setMajorTickSpacing(5);
+        thickSlider.setMinorTickSpacing(1);
+        thickSlider.setPaintLabels(true);
+        thickSlider.setPaintTicks(true);
+        thickSlider.setValue(2);
+        options.add(thickness);
+        thickness.add(thickSlider);
+
+        
+        JMenuItem color = new JMenuItem("Color...");
+        color.addActionListener(new colorListener());
+        options.add(color);
+        JMenuItem clear = new JMenuItem("Clear");
+        options.add(clear);
+        
+        topMenu.add(tools);
+//        
+//        ImageIcon line1 = new ImageIcon("resources//line.gif");
+//        ImageIcon pencil1 = new ImageIcon("resources//pencil.gif");
+//        ImageIcon rectangle1 = new ImageIcon("resources//rectangle.gif");
+//        ImageIcon ellipse1 = new ImageIcon("resources//ellipse.gif");
+//        
+        JRadioButtonMenuItem line = new JRadioButtonMenuItem("Line", lineIcon, true);
+        tools.add(line);
+        JRadioButtonMenuItem pencil = new JRadioButtonMenuItem("Pencil", pencilIcon);
+        tools.add(pencil);
+        JRadioButtonMenuItem rectangle = new JRadioButtonMenuItem("Rectangle", rectangleIcon);
+        tools.add(rectangle);
+        JRadioButtonMenuItem ellipse = new JRadioButtonMenuItem("Ellipse", ellipseIcon);
+        tools.add(ellipse);
+
+        
+        
+        topMenu.add(help);
+        JMenuItem about = new JMenuItem("About");
+        about.addActionListener(new aboutListener());
+        help.add(about);
+        
+       
+        myFrame.setJMenuBar(topMenu);
+    }
+    
+    
+    public void createToolBar(JFrame myFrame) {
+        JToolBar toolbar = new JToolBar();
+        JButton color = new JButton("Color...");
+        color.addActionListener(new colorListener());
+        ButtonGroup group = new ButtonGroup();
+        
+        JToggleButton line = new JToggleButton("Line", true);
+        JToggleButton pencil = new JToggleButton("Pencil");
+        JToggleButton rectangle = new JToggleButton("Rectangle");
+        JToggleButton ellipse = new JToggleButton("Ellipse");
+        
+        line.setIcon(lineIcon);
+        pencil.setIcon(pencilIcon);
+        rectangle.setIcon(rectangleIcon);
+        ellipse.setIcon(ellipseIcon);
+        
+        toolbar.add(color);
+        toolbar.add(line);
+        toolbar.add(pencil);
+        toolbar.add(rectangle);
+        toolbar.add(ellipse);
+        
+        group.add(line);
+        group.add(pencil);
+        group.add(rectangle);
+        group.add(ellipse);
+        
+        myFrame.add(toolbar, BorderLayout.SOUTH);
+    }
+    
+    class aboutListener implements ActionListener {
+
+        public void actionPerformed(final ActionEvent theEvent) {  
+            JOptionPane.showMessageDialog(null, "Autmn 2018 \nJames McHugh","TCSS 3013 - Paint Program", JOptionPane.INFORMATION_MESSAGE, icon);
+                                       
+        }
+    }
+    
+    class colorListener implements ActionListener {
+
+        public void actionPerformed(final ActionEvent theEvent) {  
+            Color newColor = JColorChooser.showDialog(null, "Choose a color", currentColor);
+            currentColor = newColor;
+                                       
+        }
+    }
+
+    public void paintComponent(final Graphics theGraphics) {
+        paintComponent(theGraphics);
+        final Graphics2D g = (Graphics2D) theGraphics;
+
+        g.setColor(currentColor);
+        g.drawLine(lineStart.x, lineStart.y, lineEnd.x, lineEnd.y);
+
+
+    }
+
+    class MyMouseListener extends MouseAdapter {
+  
+        @Override
+        public void mousePressed(MouseEvent click) {
+            lineStart = click.getPoint();
+            //repaint();
+            System.out.println("click");
+        }
+        @Override
+        public void mouseReleased(MouseEvent release) {
+            lineStart = null;
+            System.out.println("release");
+        }
+        @Override
+        public void mouseMoved(MouseEvent move) {
+            lineEnd = move.getPoint();
+        }
+        @Override
+        public void mouseDragged(MouseEvent drag) {
+            lineEnd = drag.getPoint();
+            System.out.println("drag");
+        }
+        
+    }
+    
+    
+}

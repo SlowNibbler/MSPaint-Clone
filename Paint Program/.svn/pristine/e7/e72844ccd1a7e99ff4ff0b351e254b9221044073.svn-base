@@ -1,0 +1,88 @@
+// TCSS 305 Assignment 5 - Paint
+package view;
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import javax.swing.Action;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import tools.EllipseBrush;
+import tools.LineBrush;
+import tools.PaintColorChooser;
+import tools.PencilBrush;
+import tools.RectangleBrush;
+
+
+/**
+ * 
+ * @author jamesm47
+ * @version 11/23/18
+ */
+public class PaintGUI  {
+    
+    /***Initializes myColorChooser.*/
+    private static PaintColorChooser myColorChooser;
+    /***Initializes myFrame.*/
+    private JFrame myFrame;
+    /***Initializes myDrawPanel.*/
+    private PaintGUIPanel myDrawPanel;
+    /***Initializes myToolBar.*/
+    private PaintGUIToolBar myToolBar; 
+    /***Initializes myMenuBar.*/
+    private PaintGUIMenuBar myMenuBar;
+    /***Initializes myIcon to the uw paint icon.*/
+    private ImageIcon myIcon = new ImageIcon("resources//uw_paint_icon.jpg");
+    /***Initializes myMinSize.*/
+    private Dimension myMinSize;
+    /***Initializes myScreenSize to the size of the screen.*/
+    private Dimension myScreenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    
+    
+    /**
+     * Initializes the GUI and its components.
+     */
+    public void start() {
+        
+        myFrame = new JFrame("TCSS 305 - Paint Program");
+        
+        myFrame.setIconImage(myIcon.getImage());
+        
+        myFrame.setSize(myScreenSize.width/3, myScreenSize.height/3);
+        
+        myFrame.setLocationRelativeTo(null);
+        
+        myDrawPanel = new PaintGUIPanel();
+        //fills brushes with instances of each brush.
+        final Action[] brushes = {new LineBrush(myDrawPanel), 
+                                  new PencilBrush(myDrawPanel), 
+                                  new RectangleBrush(myDrawPanel), 
+                                  new EllipseBrush(myDrawPanel)};
+        
+
+        myColorChooser = new PaintColorChooser("Color...");
+        
+        myToolBar = new PaintGUIToolBar(myColorChooser, brushes);
+        
+        myMenuBar = new PaintGUIMenuBar(myColorChooser, brushes, myFrame);
+        
+        myDrawPanel.addPropertyChangeListener(myMenuBar);
+        myDrawPanel.addPropertyChangeListener(myToolBar);
+        myMenuBar.addPropertyChangeListener(myDrawPanel);
+        
+        myDrawPanel.setCurrentBrush(myDrawPanel.myLineTool);
+        
+
+        myFrame.add(myToolBar, BorderLayout.SOUTH);
+        myFrame.add(myDrawPanel, BorderLayout.CENTER);
+        myFrame.add(myMenuBar, BorderLayout.NORTH);
+        
+        myMinSize = myFrame.getBounds().getSize();
+        
+        myFrame.setMinimumSize(myMinSize);
+        
+        myFrame.setVisible(true);
+        
+        myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }  
+}

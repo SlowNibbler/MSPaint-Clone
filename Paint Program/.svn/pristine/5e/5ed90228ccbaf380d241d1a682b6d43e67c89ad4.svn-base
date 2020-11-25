@@ -1,0 +1,24 @@
+package view;
+
+import javax.swing.Action;
+import javax.swing.ButtonGroup;
+import javax.swing.JRadioButton;
+import javax.swing.JToolBar;
+
+public class PaintGUIToolBar extends JToolBar {
+
+    private final ButtonGroup brushes;
+    
+    public PaintGUIToolBar() {
+        super();
+        brushes = new ButtonGroup();
+    }
+    
+    public void createToolBarButton(final Action theAction) {
+        final JRadioButton radioButton = new JRadioButton(theAction);
+        brushes.add(radioButton);
+        brushes.clearSelection();
+        add(radioButton);
+    }
+    
+}

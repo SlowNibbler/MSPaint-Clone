@@ -1,0 +1,74 @@
+// TCSS 305 Assignment 5 - Paint
+package view;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.HashMap;
+import java.util.Map;
+import javax.swing.Action;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
+import tools.PaintColorChooser;
+
+
+/**
+ * 
+ * @author jamesm47
+ * @version 11/23/18
+ */
+@SuppressWarnings("serial")
+public class PaintGUIToolBar extends JToolBar implements PropertyChangeListener {
+    /*** Initializes a button group for the brushes.*/
+    private final ButtonGroup myBrushes;
+    /*** Initializes a map for the brushes and their names.*/
+    private final Map<String, JToggleButton> myBrushMap = new HashMap<String, JToggleButton>();
+
+    /**
+     * sets up the tool bar for the paintGUI.
+     * @param theColorChooser the passed in color chooser
+     * @param theBrushes the list of brushes.
+     */
+    public PaintGUIToolBar(final PaintColorChooser theColorChooser, 
+                           final Action[] theBrushes) {
+        super();
+        myBrushes = new ButtonGroup();
+        final JButton color = new JButton("Color...");
+        color.setAction(theColorChooser);
+        add(color);
+        for (final Action action : theBrushes) {
+            final JToggleButton button = createToolBarButton(action);
+            add(button);
+            myBrushes.add(button);
+        }
+        
+    }
+    /**
+     * method to create tool bar buttons for the brushes in a loop.
+     * @param theAction the passed in brush.
+     * @return a tool bar button.
+     */
+    public JToggleButton createToolBarButton(final Action theAction) {
+        final JToggleButton toggleButton = new JToggleButton(theAction);
+        myBrushes.add(toggleButton);
+        myBrushMap.put(theAction.toString(), toggleButton);
+        add(toggleButton);        
+        return toggleButton;
+
+        
+    }
+    /**
+     * listener for brush events to change the selected brush.
+     * @param theEvent the property change.
+     */
+    public void propertyChange(final PropertyChangeEvent theEvent) {
+        // Synchronizes the selected brush with the menubar.
+        if ("brush".equals(theEvent.getPropertyName())) {
+            theEvent.getNewValue().getClass().getSimpleName();
+            myBrushes.setSelected(myBrushMap.get(theEvent.getNewValue().
+                                               getClass().getSimpleName()).getModel(), true); 
+        }
+    }
+    
+}
